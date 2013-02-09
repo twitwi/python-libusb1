@@ -627,6 +627,7 @@ libusb_transfer._fields_ = _libusb_transfer_fields
 libusb_capability = Enum({
 # The libusb_has_capability() API is available.
 'LIBUSB_CAP_HAS_CAPABILITY': 0,
+'LIBUSB_CAP_HAS_HOTPLUG': 1,
 })
 
 #int libusb_init(libusb_context **ctx);
@@ -1102,6 +1103,57 @@ libusb_set_pollfd_notifiers.argtypes = [libusb_context_p,
                                         libusb_pollfd_added_cb_p,
                                         libusb_pollfd_removed_cb_p, py_object]
 libusb_set_pollfd_notifiers.restype = None
+
+#typedef int libusb_hotplug_callback_handle;
+libusb_hotplug_callback_handle = c_int
+
+libusb_hotplug_flag = Enum({
+'LIBUSB_HOTPLUG_ENUMERATE': 1,
+})
+
+libusb_hotplug_event = Enum({
+'LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED': 0x01,
+'LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT': 0x02,
+})
+
+Enum({
+'LIBUSB_HOTPLUG_CLASS_ANY': -1,
+'LIBUSB_HOTPLUG_VENDORID_ANY': -2,
+'LIBUSB_HOTPLUG_PRODUCTID_ANY': -3,
+})
+
+#typedef int (LIBUSB_CALL *libusb_hotplug_callback_fn)(libusb_context *ctx,
+#        libusb_device *device, libusb_hotplug_event event, void *user_data);
+libusb_hotplug_callback_fn_p = CFUNCTYPE(c_int, libusb_context_p,
+    libusb_device_p, c_int, py_object)
+
+#int LIBUSB_CALL libusb_hotplug_register_callback(libusb_context *ctx,
+#        libusb_hotplug_event events, libusb_hotplug_flag flags,
+#        int vendor_id, int product_id, int dev_class,
+#        libusb_hotplug_callback_fn cb_fn, void *user_data,
+#        libusb_hotplug_callback_handle *handle);
+try:
+    libusb_hotplug_register_callback = libusb.libusb_hotplug_register_callback
+except AttributeError:
+    pass
+else:
+    libusb_hotplug_register_callback.argtypes = [libusb_context_p,
+        c_int, c_int,
+        c_int, c_int, c_int,
+        libusb_hotplug_callback_fn_p, py_object,
+        POINTER(libusb_hotplug_callback_handle)]
+    libusb_hotplug_register_callback.restype = c_int
+
+#void LIBUSB_CALL libusb_hotplug_deregister_callback(libusb_context *ctx,
+#        libusb_hotplug_callback_handle handle);
+try:
+    libusb_hotplug_deregister_callback = libusb.libusb_hotplug_deregister_callback
+except AttributeError:
+    pass
+else:
+    libusb_hotplug_deregister_callback.argtypes = [libusb_context_p,
+        libusb_hotplug_callback_handle]
+    libusb_hotplug_deregister_callback.restype = None
 
 # /libusb.h
 
