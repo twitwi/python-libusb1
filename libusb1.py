@@ -1116,11 +1116,7 @@ libusb_hotplug_event = Enum({
 'LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT': 0x02,
 })
 
-Enum({
-'LIBUSB_HOTPLUG_CLASS_ANY': -1,
-'LIBUSB_HOTPLUG_VENDORID_ANY': -2,
-'LIBUSB_HOTPLUG_PRODUCTID_ANY': -3,
-})
+LIBUSB_HOTPLUG_MASK_ANY = -1
 
 #typedef int (LIBUSB_CALL *libusb_hotplug_callback_fn)(libusb_context *ctx,
 #        libusb_device *device, libusb_hotplug_event event, void *user_data);

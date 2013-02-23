@@ -1946,7 +1946,9 @@ class USBContext(object):
                 events=libusb1.LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED | \
                     libusb1.LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT,
                 flags=libusb1.LIBUSB_HOTPLUG_ENUMERATE,
-                vendor_id=None, product_id=None, dev_class=None,
+                vendor_id=libusb1.LIBUSB_HOTPLUG_MASK_ANY,
+                product_id=libusb1.LIBUSB_HOTPLUG_MASK_ANY,
+                dev_class=libusb1.LIBUSB_HOTPLUG_MASK_ANY,
             ):
         """
         Registers an hotplug callback.
@@ -1970,12 +1972,6 @@ class USBContext(object):
                 del self.__hotplug_callback_dict[handle]
             return unregister
         handle = c_int()
-        if vendor_id is None:
-            vendor_id = libusb1.LIBUSB_HOTPLUG_VENDORID_ANY
-        if product_id is None:
-            product_id = libusb1.LIBUSB_HOTPLUG_PRODUCTID_ANY
-        if dev_class is None:
-            dev_class = libusb1.LIBUSB_HOTPLUG_CLASS_ANY
         callback_p = libusb1.libusb_hotplug_callback_fn_p(wrapped_callback)
         result = libusb1.libusb_hotplug_register_callback(self.__context_p,
             events, flags, vendor_id, product_id, dev_class, callback_p,
